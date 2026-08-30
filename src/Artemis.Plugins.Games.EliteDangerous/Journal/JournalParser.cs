@@ -2,13 +2,22 @@
 using Artemis.Plugins.Games.EliteDangerous.Utils;
 using Newtonsoft.Json;
 using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Artemis.Plugins.Games.EliteDangerous.Journal
 {
     internal class JournalParser : FileReaderBase
     {
-        private const string JournalFileFilter = "Journal*.*.log";
+        private const string JournalFileFilter = "Journal.*.log";
+        private static readonly Regex OldJournalFileName = new(
+            @"^Journal\.(?<timestamp>\d{12})\.(?<part>\d+)\.log$",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        private static readonly Regex NewJournalFileName = new(
+            @"^Journal\.(?<timestamp>\d{4}-\d{2}-\d{2}T\d{6})\.(?<part>\d+)\.log$",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
         private readonly string dataDirectory;
         private FileSystemWatcher journalFileWatcher;
@@ -25,14 +34,43 @@ namespace Artemis.Plugins.Games.EliteDangerous.Journal
         /// <summary>
         /// Returns the filename of the newest journal log in the given journal directory.
         /// </summary>
-        private string LatestJournal
+        internal static JournalFile FindLatestJournal(string directory)
         {
-            get
+            return Directory
+                .EnumerateFiles(directory, JournalFileFilter)
+                .Select(TryCreateJournalFile)
+                .Where(journal => journal != null)
+                .OrderByDescending(journal => journal.Timestamp)
+                .ThenByDescending(journal => journal.Part)
+                .FirstOrDefault();
+        }
+
+        internal static JournalFile TryCreateJournalFile(string path)
+        {
+            var fileName = Path.GetFileName(path);
+            var match = NewJournalFileName.Match(fileName);
+            var timestampFormat = "yyyy-MM-dd'T'HHmmss";
+
+            if (!match.Success)
             {
-                var logFiles = Directory.GetFiles(dataDirectory, JournalFileFilter);
-                Array.Sort(logFiles);
-                return logFiles[^1];
+                match = OldJournalFileName.Match(fileName);
+                timestampFormat = "yyyyMMddHHmmss";
             }
+
+            if (!match.Success)
+                return null;
+
+            var timestampText = match.Groups["timestamp"].Value;
+            if (timestampFormat == "yyyyMMddHHmmss")
+                timestampText = "20" + timestampText;
+
+            if (!DateTime.TryParseExact(timestampText, timestampFormat,
+                    CultureInfo.InvariantCulture, DateTimeStyles.None, out var timestamp) ||
+                !int.TryParse(match.Groups["part"].Value, NumberStyles.None,
+                    CultureInfo.InvariantCulture, out var part))
+                return null;
+
+            return new JournalFile(path, timestamp, part);
         }
 
         /// <summary>
@@ -41,7 +79,9 @@ namespace Artemis.Plugins.Games.EliteDangerous.Journal
         public override void Activate()
         {
             journalFileWatcher.EnableRaisingEvents = true;
-            OpenFile(LatestJournal);
+            var latestJournal = FindLatestJournal(dataDirectory);
+            if (latestJournal != null)
+                OpenFile(latestJournal.Path);
         }
 
         /// <inheritdoc />
@@ -65,7 +105,9 @@ namespace Artemis.Plugins.Games.EliteDangerous.Journal
         /// </summary>
         private void JournalFileWatcher_Created(object sender, FileSystemEventArgs e)
         {
-            OpenFile(LatestJournal);
+            var latestJournal = FindLatestJournal(dataDirectory);
+            if (latestJournal != null)
+                OpenFile(latestJournal.Path);
         }
 
         /// <inheritdoc />
@@ -74,6 +116,16 @@ namespace Artemis.Plugins.Games.EliteDangerous.Journal
             journalFileWatcher.Dispose();
             journalFileWatcher = null;
             base.Dispose();
+        }
+    }
+
+    internal sealed record JournalFile(string Path, DateTime Timestamp, int Part) : IComparable<JournalFile>
+    {
+        public int CompareTo(JournalFile other)
+        {
+            if (other == null) return 1;
+            var timestampComparison = Timestamp.CompareTo(other.Timestamp);
+            return timestampComparison != 0 ? timestampComparison : Part.CompareTo(other.Part);
         }
     }
 }
