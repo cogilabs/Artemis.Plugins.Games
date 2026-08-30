@@ -67,13 +67,54 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
         [DataModelProperty(Description = "Temperature in Kelvin.")]
         public float? Temperature { get; internal set; }
 
+        private string selectedWeapon;
+
         [DataModelProperty(Description = "Internal name of the currently selected on-foot weapon or tool.")]
-        public string SelectedWeapon { get; internal set; }
+        public string SelectedWeapon
+        {
+            get => selectedWeapon;
+            internal set
+            {
+                selectedWeapon = value;
+                SelectedWeaponType = ClassifySelectedWeapon(value);
+            }
+        }
+
+        [DataModelProperty(Description = "Category of the currently selected on-foot weapon or tool.")]
+        public SelectedWeaponType SelectedWeaponType { get; private set; }
 
         [DataModelProperty(Description = "Gravity relative to 1G.")]
         public float? Gravity { get; internal set; }
 
         [DataModelProperty(Description = "Body name reported by Status.json; does not replace journal navigation state.")]
         public string BodyName { get; internal set; }
+
+        internal static SelectedWeaponType ClassifySelectedWeapon(string selectedWeapon)
+        {
+            if (string.IsNullOrWhiteSpace(selectedWeapon))
+                return SelectedWeaponType.None;
+
+            var normalized = selectedWeapon.Trim();
+            if (normalized.StartsWith("$", System.StringComparison.Ordinal))
+                normalized = normalized[1..];
+            if (normalized.EndsWith("_name;", System.StringComparison.OrdinalIgnoreCase))
+                normalized = normalized[..^6];
+
+            if (normalized.StartsWith("wpn_m_", System.StringComparison.OrdinalIgnoreCase))
+                return SelectedWeaponType.Primary;
+            if (normalized.StartsWith("wpn_s_", System.StringComparison.OrdinalIgnoreCase))
+                return SelectedWeaponType.Secondary;
+            if (normalized.Equals("humanoid_fists", System.StringComparison.OrdinalIgnoreCase))
+                return SelectedWeaponType.Fists;
+            if (normalized.Equals("humanoid_rechargetool", System.StringComparison.OrdinalIgnoreCase))
+                return SelectedWeaponType.RechargeTool;
+            if (normalized.Equals("humanoid_companalyser", System.StringComparison.OrdinalIgnoreCase))
+                return SelectedWeaponType.CompAnalyser;
+            if (normalized.Equals("humanoid_repairtool", System.StringComparison.OrdinalIgnoreCase) ||
+                normalized.Equals("humanoid_cuttertool", System.StringComparison.OrdinalIgnoreCase))
+                return SelectedWeaponType.SuitTool;
+
+            return SelectedWeaponType.Unknown;
+        }
     }
 }
