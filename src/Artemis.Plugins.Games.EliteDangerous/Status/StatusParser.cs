@@ -78,7 +78,7 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
             dataModel.Ship.FSD.IsMassLocked = Has(StatusFlags.FSDMassLocked);
 
             // Ship fuel
-            dataModel.Ship.Fuel.FuelMain = status.Fuel.FuelMain;
+            dataModel.Ship.Fuel.UpdateMainFuel(status.Fuel.FuelMain);
             dataModel.Ship.Fuel.FuelReservoir = status.Fuel.FuelReservoir;
             dataModel.Ship.Fuel.IsLow = Has(StatusFlags.LowFuel);
             dataModel.Ship.Fuel.IsScooping = Has(StatusFlags.FuelScooping);
