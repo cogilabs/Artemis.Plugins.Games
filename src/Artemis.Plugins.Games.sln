@@ -48,6 +48,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.Games.EliteDangerous.Tests", "..\\tests\\Artemis.Plugins.Games.EliteDangerous.Tests\\Artemis.Plugins.Games.EliteDangerous.Tests.csproj", "{625C45EE-0813-4483-A4DB-EF02527A490D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -110,6 +112,10 @@ Global
 		{5F5D7E46-822A-44CC-AB2A-7BC7EE3314FB}.Debug|x64.Build.0 = Debug|x64
 		{5F5D7E46-822A-44CC-AB2A-7BC7EE3314FB}.Release|x64.ActiveCfg = Release|x64
 		{5F5D7E46-822A-44CC-AB2A-7BC7EE3314FB}.Release|x64.Build.0 = Release|x64
+		{625C45EE-0813-4483-A4DB-EF02527A490D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{625C45EE-0813-4483-A4DB-EF02527A490D}.Debug|x64.Build.0 = Debug|Any CPU
+		{625C45EE-0813-4483-A4DB-EF02527A490D}.Release|x64.ActiveCfg = Release|Any CPU
+		{625C45EE-0813-4483-A4DB-EF02527A490D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
