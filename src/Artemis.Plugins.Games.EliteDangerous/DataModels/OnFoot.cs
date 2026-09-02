@@ -1,3 +1,4 @@
+using Artemis.Core;
 using Artemis.Core.Modules;
 
 namespace Artemis.Plugins.Games.EliteDangerous.DataModels
@@ -89,6 +90,12 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
         [DataModelProperty(Description = "Body name reported by Status.json; does not replace journal navigation state.")]
         public string BodyName { get; internal set; }
 
+        [DataModelProperty(Description = "Occurs when the player boards a ship or SRV.")]
+        public DataModelEvent<OnFootTransitionEventArgs> Embark { get; } = new();
+
+        [DataModelProperty(Description = "Occurs when the player exits a ship or SRV on foot.")]
+        public DataModelEvent<OnFootTransitionEventArgs> Disembark { get; } = new();
+
         internal static SelectedWeaponType ClassifySelectedWeapon(string selectedWeapon)
         {
             if (string.IsNullOrWhiteSpace(selectedWeapon))
@@ -116,5 +123,18 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
 
             return SelectedWeaponType.Unknown;
         }
+    }
+
+    public class OnFootTransitionEventArgs : DataModelEventArgs
+    {
+        public bool SRV { get; init; }
+        public bool Taxi { get; init; }
+        public bool Multicrew { get; init; }
+        public int? ShipID { get; init; }
+        public bool OnStation { get; init; }
+        public bool OnPlanet { get; init; }
+        public string StarSystem { get; init; }
+        public string Body { get; init; }
+        public string StationName { get; init; }
     }
 }

@@ -60,12 +60,16 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
         Hot = 1 << 9,
         VeryCold = 1 << 10,
         VeryHot = 1 << 11,
+        GlideMode = 1 << 12,
         OnFootInHangar = 1 << 13,
         OnFootSocialSpace = 1 << 14,
         OnFootExterior = 1 << 15,
         BreathableAtmosphere = 1 << 16,
         TelepresenceMulticrew = 1 << 17,
-        PhysicalMulticrew = 1 << 18
+        PhysicalMulticrew = 1 << 18,
+        FSDHyperdriveCharging = 1 << 19,
+        SupercruiseOverdriveActive = 1 << 20,
+        SupercruiseAssistActive = 1 << 21
     }
 
     public enum Vehicle
@@ -102,6 +106,8 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
         Wanted,
         Hostile,
         PassengerWanted,
-        Warrant
+        Warrant,
+        Allied,
+        Thargoid
     }
 }

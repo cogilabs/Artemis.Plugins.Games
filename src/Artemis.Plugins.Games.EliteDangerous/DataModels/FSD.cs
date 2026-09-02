@@ -11,6 +11,8 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
         public bool IsJumping { get; internal set; }
         public bool IsCoolingDown { get; internal set; }
         public bool IsMassLocked { get; internal set; }
+        [DataModelProperty(Description = "Whether the hyperdrive is charging for a hyperspace jump.")]
+        public bool IsHyperdriveCharging { get; internal set; }
 
         [DataModelProperty(Description = "Occurs when the jump is first initiated (i.e. when the countdown starts after charging).")]
         public DataModelEvent<StartJumpEventArgs> StartJump { get; } = new();

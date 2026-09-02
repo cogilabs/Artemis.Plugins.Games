@@ -102,6 +102,9 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
             dataModel.Ship.Systems.IsOverheating = Has(StatusFlags.Overheating);
             dataModel.Ship.IsInDanger = Has(StatusFlags.InDanger);
             dataModel.Ship.IsBeingInterdicted = Has(StatusFlags.BeingInterdicted);
+            dataModel.Ship.IsInGlideMode = Has2(StatusFlags2.GlideMode);
+            dataModel.Ship.IsSupercruiseOverdriveActive = Has2(StatusFlags2.SupercruiseOverdriveActive);
+            dataModel.Ship.IsSupercruiseAssistActive = Has2(StatusFlags2.SupercruiseAssistActive);
 
             // Ship power
             dataModel.Ship.Systems.SystemPips = status.Pips[0] / 2f;
@@ -113,6 +116,7 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
             dataModel.Ship.FSD.IsJumping = Has(StatusFlags.FSDJump);
             dataModel.Ship.FSD.IsCoolingDown = Has(StatusFlags.FSDCooldown);
             dataModel.Ship.FSD.IsMassLocked = Has(StatusFlags.FSDMassLocked);
+            dataModel.Ship.FSD.IsHyperdriveCharging = Has2(StatusFlags2.FSDHyperdriveCharging);
 
             // Ship fuel
             dataModel.Ship.Fuel.UpdateMainFuel(status.Fuel.FuelMain);
