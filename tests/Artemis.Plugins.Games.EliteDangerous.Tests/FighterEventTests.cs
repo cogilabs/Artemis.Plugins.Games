@@ -122,6 +122,26 @@ public sealed class FighterEventTests
         Assert.False(model.Ship.Fighter.IsDeployed);
     }
 
+    [Fact]
+    public void ReplaySequenceReconstructsFinalDeploymentState()
+    {
+        var model = new EliteDangerousDataModel();
+        var replay = new[]
+        {
+            """{"event":"Loadout","Ship":"anaconda"}""",
+            """{"event":"LaunchFighter","ID":10,"PlayerControlled":false}""",
+            """{"event":"CrewLaunchFighter","ID":20}""",
+            """{"event":"DockFighter","ID":10}"""
+        };
+
+        foreach (var line in replay)
+            Apply(model, line);
+
+        Assert.True(model.Ship.Fighter.IsDeployed);
+        Apply(model, """{"event":"DockFighter","ID":20}""");
+        Assert.False(model.Ship.Fighter.IsDeployed);
+    }
+
     private static void Apply(EliteDangerousDataModel model, string json) => Parse(json).ApplyUpdate(model);
 
     private static IJournalEvent Parse(string json)
