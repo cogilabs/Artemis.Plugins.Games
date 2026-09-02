@@ -2,6 +2,7 @@ using Artemis.Plugins.Games.EliteDangerous.Journal;
 using Artemis.Plugins.Games.EliteDangerous.DataModels;
 using System;
 using System.IO;
+using System.Threading;
 using Xunit;
 
 namespace Artemis.Plugins.Games.EliteDangerous.Tests;
@@ -62,6 +63,63 @@ public sealed class JournalParserTests : IDisposable
         var expected = Create("Journal.2026-08-30T120000.10.log");
 
         Assert.Equal(expected, JournalParser.FindLatestJournal(directory)?.Path);
+    }
+
+    [Fact]
+    public void RetriesPendingJournalOnUpdateUntilItCanBeOpened()
+    {
+        var path = Create("Journal.2026-08-30T120000.01.log");
+        using var exclusiveStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+        using var parser = new JournalParser(directory);
+
+        parser.Activate();
+        Assert.False(parser.IsOpen);
+
+        parser.PerformUpdate(new EliteDangerousDataModel());
+        Assert.False(parser.IsOpen);
+
+        exclusiveStream.Dispose();
+        parser.PerformUpdate(new EliteDangerousDataModel());
+
+        Assert.True(parser.IsOpen);
+    }
+
+    [Fact]
+    public void SwitchesToNewJournalWhenItIsCreated()
+    {
+        Create("Journal.2026-08-30T120000.01.log", """{"event":"Loadout","Ship":"asp","ShipName":"FIRST"}""");
+        var model = new EliteDangerousDataModel();
+        using var parser = new JournalParser(directory);
+
+        parser.Activate();
+        parser.PerformUpdate(model);
+        Assert.Equal("FIRST", model.Ship.Name);
+
+        Create("Journal.2026-08-30T130000.01.log", """{"event":"Loadout","Ship":"asp","ShipName":"SECOND"}""");
+
+        var switched = SpinWait.SpinUntil(() =>
+        {
+            parser.PerformUpdate(model);
+            return model.Ship.Name == "SECOND";
+        }, TimeSpan.FromSeconds(2));
+
+        Assert.True(switched, "The parser did not switch to the newly created journal.");
+    }
+
+    [Fact]
+    public void QueuedCreatedCallbackAfterDisposeDoesNotReopenParser()
+    {
+        Create("Journal.2026-08-30T120000.01.log");
+        var parser = new JournalParser(directory);
+        parser.Activate();
+        Assert.True(parser.IsOpen);
+
+        parser.Dispose();
+        var newerJournal = Create("Journal.2026-08-30T130000.01.log");
+
+        parser.HandleJournalCreated(newerJournal);
+
+        Assert.False(parser.IsOpen);
     }
 
     private string Create(string fileName, string content = "")
