@@ -34,6 +34,7 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
         public DataModelEvent SystemsShutdown { get; } = new();
 
         public ShipSystems Systems { get; } = new();
+        public Fighter Fighter { get; } = new();
         public Fuel Fuel { get; } = new();
         public FSD FSD { get; } = new();
     }

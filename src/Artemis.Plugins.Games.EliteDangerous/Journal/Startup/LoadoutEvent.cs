@@ -18,6 +18,7 @@ namespace Artemis.Plugins.Games.EliteDangerous.Journal.Startup
             (model.Ship.Type, model.Ship.Size) = ShipTypeDefinitions.GetById(Ship);
             model.Navigation.MaximumUnladenJumpRange = MaxJumpRange;
             model.Ship.Fuel.UpdateCapacity(FuelCapacity?.Main, FuelCapacity?.Reserve);
+            model.Ship.Fighter.Reset();
         }
     }
 
