@@ -25,7 +25,15 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
             var status = JsonConvert.DeserializeObject<StatusJson>(trimmed);
             if (status == null) return;
 
+            ApplyStatus(dataModel, status);
+        }
+
+        internal static void ApplyStatus(EliteDangerousDataModel dataModel, StatusJson status)
+        {
+            var flags2 = status.Flags2 ?? StatusFlags2.None;
+
             bool Has(StatusFlags flag) => (status.Flags & flag) != 0;
+            bool Has2(StatusFlags2 flag) => (flags2 & flag) != 0;
 
             //
             // Update the datamodel based on the parsed values
@@ -33,12 +41,41 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
 
             // Player details
             dataModel.Player.CurrentlyPiloting =
-                  Has(StatusFlags.PilotingMainShip) ? Vehicle.Ship
+                  Has2(StatusFlags2.OnFoot) ? Vehicle.OnFoot
+                : Has(StatusFlags.PilotingMainShip) ? Vehicle.Ship
                 : Has(StatusFlags.PilotingFighter) ? Vehicle.Fighter
                 : Has(StatusFlags.PilotingSRV) ? Vehicle.SRV
                 : Vehicle.Unknown;
             dataModel.Player.LegalState = status.LegalState;
             dataModel.Player.InWing = Has(StatusFlags.InWing);
+
+            // Odyssey/on-foot state
+            var onFoot = dataModel.Player.OnFoot;
+            onFoot.IsOnFoot = Has2(StatusFlags2.OnFoot);
+            onFoot.IsInTaxi = Has2(StatusFlags2.InTaxi);
+            onFoot.IsInMulticrew = Has2(StatusFlags2.InMulticrew);
+            onFoot.IsInStation = Has2(StatusFlags2.OnFootInStation);
+            onFoot.IsOnPlanet = Has2(StatusFlags2.OnFootOnPlanet);
+            onFoot.IsAimingDownSights = Has2(StatusFlags2.AimDownSight);
+            onFoot.IsLowOnOxygen = Has2(StatusFlags2.LowOxygen);
+            onFoot.IsLowOnHealth = Has2(StatusFlags2.LowHealth);
+            onFoot.IsCold = Has2(StatusFlags2.Cold);
+            onFoot.IsHot = Has2(StatusFlags2.Hot);
+            onFoot.IsVeryCold = Has2(StatusFlags2.VeryCold);
+            onFoot.IsVeryHot = Has2(StatusFlags2.VeryHot);
+            onFoot.IsInHangar = Has2(StatusFlags2.OnFootInHangar);
+            onFoot.IsInSocialSpace = Has2(StatusFlags2.OnFootSocialSpace);
+            onFoot.IsExterior = Has2(StatusFlags2.OnFootExterior);
+            onFoot.HasBreathableAtmosphere = Has2(StatusFlags2.BreathableAtmosphere);
+            onFoot.IsInTelepresenceMulticrew = Has2(StatusFlags2.TelepresenceMulticrew);
+            onFoot.IsInPhysicalMulticrew = Has2(StatusFlags2.PhysicalMulticrew);
+
+            onFoot.Oxygen = onFoot.IsOnFoot ? status.Oxygen : null;
+            onFoot.Health = onFoot.IsOnFoot ? status.Health : null;
+            onFoot.Temperature = onFoot.IsOnFoot ? status.Temperature : null;
+            onFoot.SelectedWeapon = onFoot.IsOnFoot ? status.SelectedWeapon : null;
+            onFoot.Gravity = onFoot.IsOnFoot ? status.Gravity : null;
+            onFoot.BodyName = onFoot.IsOnFoot ? status.BodyName : null;
 
             // HUD
             dataModel.HUD.FocusedPanel = status.GuiFocus;
@@ -65,6 +102,9 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
             dataModel.Ship.Systems.IsOverheating = Has(StatusFlags.Overheating);
             dataModel.Ship.IsInDanger = Has(StatusFlags.InDanger);
             dataModel.Ship.IsBeingInterdicted = Has(StatusFlags.BeingInterdicted);
+            dataModel.Ship.IsInGlideMode = Has2(StatusFlags2.GlideMode);
+            dataModel.Ship.IsSupercruiseOverdriveActive = Has2(StatusFlags2.SupercruiseOverdriveActive);
+            dataModel.Ship.IsSupercruiseAssistActive = Has2(StatusFlags2.SupercruiseAssistActive);
 
             // Ship power
             dataModel.Ship.Systems.SystemPips = status.Pips[0] / 2f;
@@ -76,9 +116,10 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
             dataModel.Ship.FSD.IsJumping = Has(StatusFlags.FSDJump);
             dataModel.Ship.FSD.IsCoolingDown = Has(StatusFlags.FSDCooldown);
             dataModel.Ship.FSD.IsMassLocked = Has(StatusFlags.FSDMassLocked);
+            dataModel.Ship.FSD.IsHyperdriveCharging = Has2(StatusFlags2.FSDHyperdriveCharging);
 
             // Ship fuel
-            dataModel.Ship.Fuel.FuelMain = status.Fuel.FuelMain;
+            dataModel.Ship.Fuel.UpdateMainFuel(status.Fuel.FuelMain);
             dataModel.Ship.Fuel.FuelReservoir = status.Fuel.FuelReservoir;
             dataModel.Ship.Fuel.IsLow = Has(StatusFlags.LowFuel);
             dataModel.Ship.Fuel.IsScooping = Has(StatusFlags.FuelScooping);

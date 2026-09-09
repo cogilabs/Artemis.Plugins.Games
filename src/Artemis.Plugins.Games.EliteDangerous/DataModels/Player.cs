@@ -9,6 +9,7 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
         public Ranks Ranks { get; } = new();
         public LegalState LegalState { get; internal set; }
         public bool InWing { get; internal set; }
+        public OnFoot OnFoot { get; } = new();
 
         public DataModelEvent Died { get; } = new();
     }

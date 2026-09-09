@@ -39,11 +39,25 @@ namespace Artemis.Plugins.Games.EliteDangerous.Utils
         /// <param name="path">The full path of the file to open.</param>
         protected void OpenFile(string path)
         {
-            CloseFile();
+            var newFileStream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            StreamReader newStreamReader;
+
+            try
+            {
+                newStreamReader = new StreamReader(newFileStream);
+            }
+            catch
+            {
+                newFileStream.Dispose();
+                throw;
+            }
+
             lock (streamLock)
             {
-                fileStream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                streamReader = new StreamReader(fileStream);
+                streamReader?.Dispose();
+                fileStream?.Dispose();
+                fileStream = newFileStream;
+                streamReader = newStreamReader;
             }
         }
 
@@ -75,7 +89,7 @@ namespace Artemis.Plugins.Games.EliteDangerous.Utils
         /// Reads from the file and updates the data model with new values.
         /// </summary>
         /// <param name="dataModel">Data model to update.</param>
-        public void PerformUpdate(EliteDangerousDataModel dataModel)
+        public virtual void PerformUpdate(EliteDangerousDataModel dataModel)
         {
             lock (streamLock)
             {

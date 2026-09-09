@@ -15,11 +15,26 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
 
         public bool IsInDanger { get; internal set; }
         public bool IsBeingInterdicted { get; internal set; }
+        [DataModelProperty(Description = "Whether the ship is gliding towards a planetary surface.")]
+        public bool IsInGlideMode { get; internal set; }
+
+        [DataModelProperty(Description = "Whether supercruise overdrive is active.")]
+        public bool IsSupercruiseOverdriveActive { get; internal set; }
+
+        [DataModelProperty(Description = "Whether supercruise assist is active.")]
+        public bool IsSupercruiseAssistActive { get; internal set; }
 
         [DataModelProperty(Description = "Event that occurs when the player successfully evades an interdiction or is interdicted by another ship. ")]
         public DataModelEvent<InterdictionEventArgs> Interdiction { get; } = new();
 
+        [DataModelProperty(Description = "Occurs when Elite records a ship reboot/repair operation.")]
+        public DataModelEvent<RebootRepairEventArgs> RebootRepair { get; } = new();
+
+        [DataModelProperty(Description = "Occurs when the ship's systems shut down.")]
+        public DataModelEvent SystemsShutdown { get; } = new();
+
         public ShipSystems Systems { get; } = new();
+        public Fighter Fighter { get; } = new();
         public Fuel Fuel { get; } = new();
         public FSD FSD { get; } = new();
     }
@@ -31,5 +46,10 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
         public bool InterdictorIsPlayer { get; init; }
         public bool Escaped { get; init; }
         public bool Submitted { get; init; }
+    }
+
+    public class RebootRepairEventArgs : DataModelEventArgs
+    {
+        public string[] Modules { get; init; } = System.Array.Empty<string>();
     }
 }
