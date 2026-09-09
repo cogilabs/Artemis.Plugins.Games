@@ -6,6 +6,7 @@ namespace Artemis.Plugins.Games.EliteDangerous.Journal.Combat
     {
         public void ApplyUpdate(EliteDangerousDataModel model)
         {
+            model.Ship.Fighter.Reset();
             model.Player.Died.Trigger();
         }
     }

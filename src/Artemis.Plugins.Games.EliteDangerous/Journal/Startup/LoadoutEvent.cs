@@ -9,6 +9,7 @@ namespace Artemis.Plugins.Games.EliteDangerous.Journal.Startup
         public string ShipName;
         public string ShipIdent;
         public float MaxJumpRange;
+        public FuelCapacity FuelCapacity;
 
         public void ApplyUpdate(EliteDangerousDataModel model)
         {
@@ -16,6 +17,14 @@ namespace Artemis.Plugins.Games.EliteDangerous.Journal.Startup
             model.Ship.Ident = ShipIdent;
             (model.Ship.Type, model.Ship.Size) = ShipTypeDefinitions.GetById(Ship);
             model.Navigation.MaximumUnladenJumpRange = MaxJumpRange;
+            model.Ship.Fuel.UpdateCapacity(FuelCapacity?.Main, FuelCapacity?.Reserve);
+            model.Ship.Fighter.Reset();
         }
+    }
+
+    internal class FuelCapacity
+    {
+        public float Main;
+        public float Reserve;
     }
 }

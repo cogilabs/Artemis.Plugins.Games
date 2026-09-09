@@ -44,12 +44,41 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
         SRVHighBeam = 1u << 31
     }
 
+    [Flags]
+    public enum StatusFlags2 : uint
+    {
+        None = 0,
+        OnFoot = 1 << 0,
+        InTaxi = 1 << 1,
+        InMulticrew = 1 << 2,
+        OnFootInStation = 1 << 3,
+        OnFootOnPlanet = 1 << 4,
+        AimDownSight = 1 << 5,
+        LowOxygen = 1 << 6,
+        LowHealth = 1 << 7,
+        Cold = 1 << 8,
+        Hot = 1 << 9,
+        VeryCold = 1 << 10,
+        VeryHot = 1 << 11,
+        GlideMode = 1 << 12,
+        OnFootInHangar = 1 << 13,
+        OnFootSocialSpace = 1 << 14,
+        OnFootExterior = 1 << 15,
+        BreathableAtmosphere = 1 << 16,
+        TelepresenceMulticrew = 1 << 17,
+        PhysicalMulticrew = 1 << 18,
+        FSDHyperdriveCharging = 1 << 19,
+        SupercruiseOverdriveActive = 1 << 20,
+        SupercruiseAssistActive = 1 << 21
+    }
+
     public enum Vehicle
     {
         Unknown,
         Ship,
         Fighter,
-        SRV
+        SRV,
+        OnFoot
     }
 
     public enum GuiPanel
@@ -77,6 +106,8 @@ namespace Artemis.Plugins.Games.EliteDangerous.Status
         Wanted,
         Hostile,
         PassengerWanted,
-        Warrant
+        Warrant,
+        Allied,
+        Thargoid
     }
 }

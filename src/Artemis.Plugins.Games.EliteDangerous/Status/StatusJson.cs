@@ -3,6 +3,7 @@
     public sealed class StatusJson
     {
         public StatusFlags Flags;
+        public StatusFlags2? Flags2;
         public int[] Pips = new[] { 0, 0, 0 };
         public int FireGroup;
         public GuiPanel GuiFocus;
@@ -13,6 +14,12 @@
         public double? Longitude;
         public double? Altitude;
         public double? Heading;
+        public float? Oxygen;
+        public float? Health;
+        public float? Temperature;
+        public string SelectedWeapon;
+        public float? Gravity;
+        public string BodyName;
     }
 
     public sealed class Fuel
