@@ -1,6 +1,6 @@
 # Elite: Dangerous Plugin
 
-**Note that this module only works with Elite: Dangerous Horizons. It does not support the Odessey expansion.**
+**Includes support for Elite Dangerous: Odyssey status data and on-foot gameplay.**
 
 This plugin adds a profile module for Elite: Dangerous.
 
