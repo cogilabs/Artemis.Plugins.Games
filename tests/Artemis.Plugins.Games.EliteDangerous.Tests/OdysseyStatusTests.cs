@@ -15,6 +15,7 @@ public sealed class OdysseyStatusTests
     [InlineData("$humanoid_fists_name;", SelectedWeaponType.Fists)]
     [InlineData("$humanoid_rechargetool_name;", SelectedWeaponType.RechargeTool)]
     [InlineData("$humanoid_companalyser_name;", SelectedWeaponType.CompAnalyser)]
+    [InlineData("$humanoid_sampletool_name;", SelectedWeaponType.SuitTool)]
     [InlineData("$humanoid_repairtool_name;", SelectedWeaponType.SuitTool)]
     [InlineData("$humanoid_cuttertool_name;", SelectedWeaponType.SuitTool)]
     [InlineData("", SelectedWeaponType.None)]

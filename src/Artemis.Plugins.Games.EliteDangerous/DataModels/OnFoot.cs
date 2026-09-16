@@ -117,7 +117,8 @@ namespace Artemis.Plugins.Games.EliteDangerous.DataModels
                 return SelectedWeaponType.RechargeTool;
             if (normalized.Equals("humanoid_companalyser", System.StringComparison.OrdinalIgnoreCase))
                 return SelectedWeaponType.CompAnalyser;
-            if (normalized.Equals("humanoid_repairtool", System.StringComparison.OrdinalIgnoreCase) ||
+            if (normalized.Equals("humanoid_sampletool", System.StringComparison.OrdinalIgnoreCase) ||
+                normalized.Equals("humanoid_repairtool", System.StringComparison.OrdinalIgnoreCase) ||
                 normalized.Equals("humanoid_cuttertool", System.StringComparison.OrdinalIgnoreCase))
                 return SelectedWeaponType.SuitTool;
 
